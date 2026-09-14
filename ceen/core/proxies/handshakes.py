@@ -182,15 +182,19 @@ def socks5_handshake(sock: socket.socket, entry: ProxyEntry,
 
 def socks4_handshake(sock: socket.socket, entry: ProxyEntry,
                      host: str, port: int, deadline: float) -> None:
-    """SOCKS4 CONNECT; resolves locally, falls back to SOCKS4a hostname."""
+    """SOCKS4 CONNECT — DNS-SAFE: hostnames are NEVER resolved here.
+
+    Classic SOCKS4 wants a raw IP, and resolving one locally would leak
+    every site name to your ISP's DNS servers. So hostnames go out as
+    SOCKS4a (protocol extension: the PROXY does the resolving). If a
+    proxy is too old for SOCKS4a it simply fails the handshake — the
+    caller benches it and rotates to the next server. Privacy wins.
+    """
     try:
-        packed, tail = socket.inet_aton(host), b""
+        packed, tail = socket.inet_aton(host), b""      # literal IP: fine
     except OSError:
-        try:                                    # classic SOCKS4: resolve here
-            packed, tail = socket.inet_aton(socket.gethostbyname(host)), b""
-        except OSError:                         # SOCKS4a: send hostname over
-            packed, tail = b"\x00\x00\x00\x01", host.encode("idna")[:255] \
-                + b"\x00"
+        packed = b"\x00\x00\x00\x01"                   # SOCKS4a marker
+        tail = host.encode("idna")[:255] + b"\x00"      # name for the proxy
     uid = entry.user.encode()[:255]
     sock.sendall(b"\x04\x01" + port.to_bytes(2, "big") + packed + uid
                  + b"\x00" + tail)
