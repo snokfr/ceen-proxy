@@ -87,6 +87,14 @@ exports are written next to the exe; settings stay in `~/.ceen_proxy.json`.
 
 ## Safety notes
 
+**DNS privacy (remote DNS):** website names are never resolved on your
+PC. Browsers hand hostnames to the local tunnel, which forwards the NAME
+to the proxy — the proxy does the lookup, so your ISP's DNS servers only
+ever see a connection to the proxy's IP. This holds for HTTP CONNECT,
+SOCKS5 (domain address type) and SOCKS4a, and a guard test keeps local
+resolver calls out of the engine. (Caveat: plain-HTTP sites are visible
+to the proxy itself; HTTPS is encrypted end-to-end.)
+
 - Free proxies can see unencrypted HTTP traffic; HTTPS stays
   end-to-end encrypted as usual.
 - The Windows system-proxy switch is restored on disconnect, on normal

@@ -3,6 +3,7 @@
 import sys
 
 import tests.test_connect_path
+import tests.test_dns_guard
 import tests.test_parser
 import tests.test_pool
 import tests.test_rotator
@@ -12,8 +13,9 @@ import tests.test_settings
 def main() -> int:
     print("[Ceen Proxy] self-tests")
     ok = True
-    for mod in (tests.test_connect_path, tests.test_parser,
-                tests.test_pool, tests.test_rotator, tests.test_settings):
+    for mod in (tests.test_connect_path, tests.test_dns_guard,
+                tests.test_parser, tests.test_pool, tests.test_rotator,
+                tests.test_settings):
         try:
             ok = mod.run() and ok
         except Exception as exc:  # noqa: BLE001 — report, don't crash
