@@ -1,0 +1,17 @@
+# build artifacts
+build/
+dist/
+release/
+*.zip
+*.spec.bak
+exe_out.txt
+gui_out.txt
+smoke_out.txt
+live_out.txt
+
+# runtime data
+logs/
+free-proxy-list.txt.bak
+ceen_proxy.json.bad
+__pycache__/
+*.pyc
